@@ -3,13 +3,25 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "bootstrap/dist/css/bootstrap.css";
 import LetterButton from "./components/LetterButton";
+import {
+  initializeHangmanGame,
+  answerLetter,
+  getWord,
+} from "./lib/hangman-game";
 
 function App() {
   let letters = ["A", "B", "C", "D", "E"];
+  const [wordToGuess, setWordToGuess] = useState("-");
+  const [isReady, setIsReady] = useState(false);
 
   const pressLetter = function (letter: string) {
-    alert(letter);
+    pressLetter(letter);
   };
+
+  initializeHangmanGame().then(() => {
+    setWordToGuess(getWord());
+    setIsReady(true);
+  });
 
   return (
     <div className="d-flex flex-column justify-content-between bg-secondary vh-100">
@@ -18,7 +30,7 @@ function App() {
       </div>
       <div className="row mx-0">
         <div className="col-5 bg-info">hangman guy here</div>
-        <div className="col-7 bg-warning">word here</div>
+        <div className="col-7 bg-warning">{wordToGuess}</div>
       </div>
       <div className="bg-success">
         {letters.map((letter) => (
@@ -29,11 +41,6 @@ function App() {
           />
         ))}
         {/* remove later */}
-        <LetterButton
-          letter="F"
-          isActive={false}
-          onClickHandler={() => pressLetter("F")}
-        />
       </div>
     </div>
   );
