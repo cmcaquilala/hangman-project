@@ -1,26 +1,33 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "bootstrap/dist/css/bootstrap.css";
 import LetterButton from "./components/LetterButton";
 import {
   initializeHangmanGame,
   answerLetter,
   getWord,
+  getGuess,
+  getPlayedLetters,
 } from "./lib/hangman-game";
 
 function App() {
-  let letters = ["A", "B", "C", "D", "E"];
-  const [wordToGuess, setWordToGuess] = useState("-");
-  const [isReady, setIsReady] = useState(false);
+  let letters: string[] = [];
 
-  const pressLetter = function (letter: string) {
-    pressLetter(letter);
+  for (let i = 65; i <= 90; i++) {
+    letters.push(String.fromCharCode(i));
+  }
+
+  const [wordToGuess, setWordToGuess] = useState("-");
+  const [playedLetters, setPlayedLetters] = useState(new Set<string>());
+  // const [isReady, setIsReady] = useState(false);
+
+  const pressLetter = (letter: string) => {
+    answerLetter(letter);
   };
 
   initializeHangmanGame().then(() => {
-    setWordToGuess(getWord());
-    setIsReady(true);
+    setWordToGuess(getGuess());
+    setPlayedLetters(getPlayedLetters().add("a"));
+    // setIsReady(true);
   });
 
   return (
@@ -29,15 +36,20 @@ function App() {
         <h1>Hangman</h1>
       </div>
       <div className="row mx-0">
-        <div className="col-5 bg-info">hangman guy here</div>
+        <div className="col-5 bg-info">
+          hangman guy here
+          <div>Played letters</div>
+          <span>{Array.from(playedLetters).map((letter) => letter)}</span>
+        </div>
         <div className="col-7 bg-warning">{wordToGuess}</div>
       </div>
       <div className="bg-success">
         {letters.map((letter) => (
           <LetterButton
             letter={letter}
-            isActive={true}
-            onClickHandler={() => pressLetter(letter)}
+            onClickHandler={() => {
+              pressLetter(letter);
+            }}
           />
         ))}
         {/* remove later */}

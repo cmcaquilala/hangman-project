@@ -1,10 +1,13 @@
+import { useState } from "react";
+
 interface Props {
   letter: string;
-  isActive: boolean;
   onClickHandler: () => void;
 }
 
-const LetterButton = ({ letter, isActive, onClickHandler }: Props) => {
+const LetterButton = ({ letter, onClickHandler }: Props) => {
+  const [isActive, setIsActive] = useState(true);
+
   if (!isActive) {
     return (
       <button className="btn btn-primary" disabled>
@@ -14,7 +17,13 @@ const LetterButton = ({ letter, isActive, onClickHandler }: Props) => {
   }
 
   return (
-    <button className="btn btn-primary" onClick={onClickHandler}>
+    <button
+      className="btn btn-primary"
+      onClick={() => {
+        onClickHandler();
+        setIsActive(false);
+      }}
+    >
       {letter}
     </button>
   );
