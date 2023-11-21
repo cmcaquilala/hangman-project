@@ -15,12 +15,15 @@ async function getWordFromAPI() {
   
   let word : string = "apple";
 
+  word = word.toUpperCase();
+
   return word;
 }
 
 export function answerLetter(letter : string) {
-  alert(letter);
-  setPlayedLetters(getPlayedLetters().add(letter))
+  setPlayedLetters(getPlayedLetters().add(letter));
+
+  updateGuess();
 }
 
 export function getWord() {
@@ -41,6 +44,14 @@ export function setPlayedLetters(value : Set<string>) {
 
 export function getGuess() {
   return guess;
+}
+
+export function updateGuess() {
+  guess = "";
+
+  for(let letter of getWord()) {
+    guess += getPlayedLetters().has(letter) ? ` ${letter}` : " _";
+  }
 }
 
 export function resetGuess(word : string) {

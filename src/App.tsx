@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import LetterButton from "./components/LetterButton";
 import {
@@ -17,18 +17,21 @@ function App() {
   }
 
   const [wordToGuess, setWordToGuess] = useState("-");
-  const [playedLetters, setPlayedLetters] = useState(new Set<string>());
+  const [playedLetters, updatePlayedLetters] = useState<string[]>([]);
   // const [isReady, setIsReady] = useState(false);
 
   const pressLetter = (letter: string) => {
     answerLetter(letter);
+    updatePlayedLetters(() => Array.from(getPlayedLetters()).sort());
+    setWordToGuess(getGuess());
   };
 
-  initializeHangmanGame().then(() => {
-    setWordToGuess(getGuess());
-    setPlayedLetters(getPlayedLetters().add("a"));
-    // setIsReady(true);
-  });
+  useEffect(() => {
+    initializeHangmanGame().then(() => {
+      setWordToGuess(getGuess());
+      // setIsReady(true);
+    });
+  }, []);
 
   return (
     <div className="d-flex flex-column justify-content-between bg-secondary vh-100">
@@ -39,7 +42,9 @@ function App() {
         <div className="col-5 bg-info">
           hangman guy here
           <div>Played letters</div>
-          <span>{Array.from(playedLetters).map((letter) => letter)}</span>
+          <span>
+            {Array.from(playedLetters).map((letter) => " " + letter + " ")}
+          </span>
         </div>
         <div className="col-7 bg-warning">{wordToGuess}</div>
       </div>
