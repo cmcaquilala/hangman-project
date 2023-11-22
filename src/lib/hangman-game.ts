@@ -12,11 +12,10 @@ export async function initializeHangmanGame() {
 }
 
 async function getWordFromAPI() {
-  await new Promise(f => setTimeout(f, 1000));
-  
-  let word : string = "apple";
+  let response = await fetch("https://random-word-api.herokuapp.com/word");
+  let randomWord = (await response.json())[0];
 
-  word = word.toUpperCase();
+  word = randomWord.toUpperCase();
 
   return word;
 }
