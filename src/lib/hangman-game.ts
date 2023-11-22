@@ -2,6 +2,7 @@ let word = "nowordyet";
 let guess = "noguess";
 let noOfMistakes = 0;
 let playedLetters = new Set<string>();
+const NO_OF_ALLOWED_MISTAKES = 5; 
 
 export async function initializeHangmanGame() {
   await getWordFromAPI().then((wordFromAPI) => {
@@ -21,9 +22,34 @@ async function getWordFromAPI() {
 }
 
 export function answerLetter(letter : string) {
-  setPlayedLetters(getPlayedLetters().add(letter));
+  if(getPlayedLetters().has(letter)) {
+    return;
+  }
 
+  let isInWord = getWord().includes(letter);
+
+  if(!isInWord) {
+    setNoOfMistakes(getNoOfMistakes() + 1);
+  }
+
+  setPlayedLetters(getPlayedLetters().add(letter));
   updateGuess();
+
+  if(checkLose()){
+    alert("You lost.");
+  }
+
+  if(checkWin()){
+    alert("You win!");
+  }
+}
+
+export function checkWin() {
+  return !getGuess().includes("_");
+}
+
+export function checkLose() {
+  return getNoOfMistakes() >= NO_OF_ALLOWED_MISTAKES
 }
 
 export function getWord() {

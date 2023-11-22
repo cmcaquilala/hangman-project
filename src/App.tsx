@@ -7,6 +7,7 @@ import {
   getWord,
   getGuess,
   getPlayedLetters,
+  getNoOfMistakes,
 } from "./lib/hangman-game";
 
 function App() {
@@ -16,19 +17,21 @@ function App() {
     letters.push(String.fromCharCode(i));
   }
 
-  const [wordToGuess, setWordToGuess] = useState("-");
+  const [wordToGuess, updateWordToGuess] = useState("-");
   const [playedLetters, updatePlayedLetters] = useState<string[]>([]);
+  const [noOfMistakes, updateNoOfMistakes] = useState(0);
   // const [isReady, setIsReady] = useState(false);
 
   const pressLetter = (letter: string) => {
     answerLetter(letter);
     updatePlayedLetters(() => Array.from(getPlayedLetters()).sort());
-    setWordToGuess(getGuess());
+    updateNoOfMistakes(getNoOfMistakes());
+    updateWordToGuess(getGuess());
   };
 
   useEffect(() => {
     initializeHangmanGame().then(() => {
-      setWordToGuess(getGuess());
+      updateWordToGuess(getGuess());
       // setIsReady(true);
     });
   }, []);
@@ -41,6 +44,7 @@ function App() {
       <div className="row mx-0">
         <div className="col-5 bg-info">
           hangman guy here
+          <div>No of mistakes: {noOfMistakes}</div>
           <div>Played letters</div>
           <span>
             {Array.from(playedLetters).map((letter) => " " + letter + " ")}
