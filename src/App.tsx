@@ -14,7 +14,12 @@ function App() {
   const [guess, updateGuess] = useState("-");
   const [playedLetters, updatePlayedLetters] = useState<Set<string>>(new Set());
   const [noOfMistakes, updateNoOfMistakes] = useState(0);
-  const [letters, updateLetters] = useState<string[]>([]);
+  const [letters, updateLetters] = useState<letterButton[]>([]);
+
+  interface letterButton {
+    letter: string;
+    isActive: boolean;
+  }
 
   useEffect(() => {
     refreshGuess();
@@ -23,7 +28,10 @@ function App() {
   const resetHangman = () => {
     updateLetters([]);
     for (let i = 65; i <= 90; i++) {
-      updateLetters((prevState) => [...prevState, String.fromCharCode(i)]);
+      updateLetters((prevState: letterButton[]) => [
+        ...prevState,
+        { letter: String.fromCharCode(i), isActive: true },
+      ]);
     }
 
     getWordFromAPI().then((result) => {
@@ -35,7 +43,7 @@ function App() {
   };
 
   const refreshGuess = () => {
-    return updateGuess(getGuess(word, playedLetters));
+    return updateGuess((prev) => (prev = getGuess(word, playedLetters)));
   };
 
   const pressLetter = (letter: string) => {
@@ -46,6 +54,15 @@ function App() {
       noOfMistakes
     );
 
+    updateLetters((prev) => {
+      for (let item of prev) {
+        if (item.letter === letter) {
+          item.isActive = false;
+          break;
+        }
+      }
+      return prev;
+    });
     updatePlayedLetters(newPlayedLetters);
     updateNoOfMistakes(newNoOfMistakes);
     refreshGuess();
@@ -87,15 +104,16 @@ function App() {
         <div className="col-7 bg-warning">{guess}</div>
       </div>
       <div className="bg-success">
-        {letters.map((letter) => (
+        {letters.map((letter, i) => (
           <LetterButton
-            letter={letter}
+            letter={letter.letter}
+            isActive={letter.isActive}
+            key={i}
             onClickHandler={() => {
-              pressLetter(letter);
+              pressLetter(letter.letter);
             }}
           />
         ))}
-        {/* remove later */}
       </div>
     </div>
   );

@@ -2,12 +2,13 @@ import { useState } from "react";
 
 interface Props {
   letter: string;
+  key: number;
+  isActive: boolean;
   onClickHandler: () => void;
 }
 
-const LetterButton = ({ letter, onClickHandler }: Props) => {
-  const [isActive, setIsActive] = useState(true);
-
+const LetterButton = ({ letter, isActive, onClickHandler }: Props) => {
+  // const [isActive, setIsActive] = useState(true);
   if (!isActive) {
     return (
       <button className="btn btn-primary" disabled>
@@ -21,7 +22,7 @@ const LetterButton = ({ letter, onClickHandler }: Props) => {
       className="btn btn-primary"
       onClick={() => {
         onClickHandler();
-        setIsActive(false);
+        // setIsActive(false);
       }}
     >
       {letter}
