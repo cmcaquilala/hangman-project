@@ -14,7 +14,15 @@ function App() {
   const [guess, updateGuess] = useState("-");
   const [playedLetters, updatePlayedLetters] = useState<Set<string>>(new Set());
   const [noOfMistakes, updateNoOfMistakes] = useState(0);
-  const [letters, updateLetters] = useState<letterButton[]>([]);
+  // const [row1Letters, row1UpdateLetters] = useState<letterButton[]>([]);
+  // const [row2Letters, row2UpdateLetters] = useState<letterButton[]>([]);
+  // const [row3Letters, row3UpdateLetters] = useState<letterButton[]>([]);
+
+  const [keyboardLetters, updateKeyboardLetters] = useState<letterButton[][]>([
+    [],
+    [],
+    [],
+  ]);
 
   interface letterButton {
     letter: string;
@@ -26,13 +34,7 @@ function App() {
   }, [word]);
 
   const resetHangman = () => {
-    updateLetters([]);
-    for (let i = 65; i <= 90; i++) {
-      updateLetters((prevState: letterButton[]) => [
-        ...prevState,
-        { letter: String.fromCharCode(i), isActive: true },
-      ]);
-    }
+    buildLetterButtons();
 
     getWordFromAPI().then((result) => {
       updateWord(result);
@@ -43,7 +45,31 @@ function App() {
   };
 
   const refreshGuess = () => {
-    return updateGuess((prev) => (prev = getGuess(word, playedLetters)));
+    return updateGuess((prev) => getGuess(word, playedLetters));
+  };
+
+  const buildLetterButtons = () => {
+    const getKeyboardRows = () => {
+      let row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
+      let row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
+      let row3 = ["Z", "X", "C", "V", "B", "N", "M"];
+
+      return [row1, row2, row3];
+    };
+
+    updateKeyboardLetters((prev) => [[], [], []]);
+    let keyboardRows = getKeyboardRows();
+
+    for (let [index, row] of keyboardRows.entries()) {
+      for (let letter of row) {
+        updateKeyboardLetters((prev) => {
+          prev[index] = [...prev[index], { letter: letter, isActive: true }];
+          return prev;
+        });
+      }
+    }
+
+    console.log(keyboardLetters);
   };
 
   const pressLetter = (letter: string) => {
@@ -54,13 +80,14 @@ function App() {
       noOfMistakes
     );
 
-    updateLetters((prev) => {
-      for (let item of prev) {
-        if (item.letter === letter) {
-          item.isActive = false;
-          break;
+    updateKeyboardLetters((prev) => {
+      for (let row of prev)
+        for (let item of row) {
+          if (item.letter === letter) {
+            item.isActive = false;
+            break;
+          }
         }
-      }
       return prev;
     });
     updatePlayedLetters(newPlayedLetters);
@@ -86,33 +113,43 @@ function App() {
   }, []);
 
   return (
-    <div className="d-flex flex-column justify-content-between bg-secondary vh-100">
-      <div className="bg-danger py-3">
+    <div className="d-flex flex-column justify-content-between bg-dark vh-100 font-monospace">
+      <div className="d-flex justify-content-center bg-secondary py-3">
         <h1>Hangman</h1>
       </div>
-      <div className="row mx-0">
-        <div className="col-5 bg-info">
-          hangman guy here {word}
-          <div>No of mistakes: {noOfMistakes}</div>
-          <div>Played letters</div>
-          <span>
-            {Array.from(playedLetters)
-              .sort()
-              .map((letter) => " " + letter + " ")}
-          </span>
+      <div className="row mx-0 h-50 text-white">
+        <div className="col-5 text-center">
+          <div className="h-75 d-flex flex-column justify-content-center">
+            hangman guy here
+            <div>No of mistakes: {noOfMistakes}</div>
+          </div>
+
+          <div className="h-25">
+            <div>Played letters</div>
+            <span>
+              {" "}
+              {Array.from(playedLetters)
+                .sort()
+                .map((letter) => " " + letter + " ")}
+            </span>
+          </div>
         </div>
-        <div className="col-7 bg-warning">{guess}</div>
+        <div className="col-7 d-flex flex-column justify-content-center text-center">
+          {guess}
+        </div>
       </div>
-      <div className="bg-success">
-        {letters.map((letter, i) => (
-          <LetterButton
-            letter={letter.letter}
-            isActive={letter.isActive}
-            key={i}
-            onClickHandler={() => {
-              pressLetter(letter.letter);
-            }}
-          />
+      <div className="d-flex flex-column bg-secondary py-5">
+        {keyboardLetters.map((row) => (
+          <div className="text-center mt-1">
+            {row.map((letter, index) => (
+              <LetterButton
+                letter={letter.letter}
+                isActive={letter.isActive}
+                key={index}
+                onClickHandler={() => pressLetter(letter.letter)}
+              />
+            ))}
+          </div>
         ))}
       </div>
     </div>

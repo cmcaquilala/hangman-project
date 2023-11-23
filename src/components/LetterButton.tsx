@@ -8,21 +8,13 @@ interface Props {
 }
 
 const LetterButton = ({ letter, isActive, onClickHandler }: Props) => {
-  // const [isActive, setIsActive] = useState(true);
-  if (!isActive) {
-    return (
-      <button className="btn btn-primary" disabled>
-        {letter}
-      </button>
-    );
-  }
-
   return (
     <button
-      className="btn btn-primary"
+      type="button"
+      className="btn btn-lg btn-dark mx-1 px-4 font-monospace"
+      disabled={!isActive}
       onClick={() => {
         onClickHandler();
-        // setIsActive(false);
       }}
     >
       {letter}

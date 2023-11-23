@@ -1,4 +1,4 @@
-const NO_OF_ALLOWED_MISTAKES = 5; 
+const NO_OF_ALLOWED_MISTAKES = 7; 
 
 export async function getWordFromAPI() {
   let response = await fetch("https://random-word-api.herokuapp.com/word");
