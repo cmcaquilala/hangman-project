@@ -12,11 +12,11 @@ import {
 function App() {
   const [word, updateWord] = useState("");
   const [guess, updateGuess] = useState("-");
-  const [playedLetters, updatePlayedLetters] = useState<Set<string>>(new Set());
+  const [correctLetters, updateCorrectLetters] = useState<Set<string>>(
+    new Set()
+  );
+  const [wrongLetters, updatewrongLetters] = useState<Set<string>>(new Set());
   const [noOfMistakes, updateNoOfMistakes] = useState(0);
-  // const [row1Letters, row1UpdateLetters] = useState<letterButton[]>([]);
-  // const [row2Letters, row2UpdateLetters] = useState<letterButton[]>([]);
-  // const [row3Letters, row3UpdateLetters] = useState<letterButton[]>([]);
 
   const [keyboardLetters, updateKeyboardLetters] = useState<letterButton[][]>([
     [],
@@ -39,13 +39,14 @@ function App() {
     getWordFromAPI().then((result) => {
       updateWord(result);
       refreshGuess();
-      updatePlayedLetters(new Set());
+      updateCorrectLetters(new Set());
+      updatewrongLetters(new Set());
       updateNoOfMistakes(0);
     });
   };
 
   const refreshGuess = () => {
-    return updateGuess((prev) => getGuess(word, playedLetters));
+    return updateGuess((prev) => getGuess(word, correctLetters));
   };
 
   const buildLetterButtons = () => {
@@ -73,10 +74,11 @@ function App() {
   };
 
   const pressLetter = (letter: string) => {
-    const [newPlayedLetters, newNoOfMistakes] = answerLetter(
+    const [newCorrectLetters, newWrongLetters, newNoOfMistakes] = answerLetter(
       letter,
       word,
-      playedLetters,
+      correctLetters,
+      wrongLetters,
       noOfMistakes
     );
 
@@ -90,11 +92,12 @@ function App() {
         }
       return prev;
     });
-    updatePlayedLetters(newPlayedLetters);
+    updateCorrectLetters(newCorrectLetters);
+    updatewrongLetters(newWrongLetters);
     updateNoOfMistakes(newNoOfMistakes);
     refreshGuess();
 
-    if (checkWin(getGuess(word, newPlayedLetters))) {
+    if (checkWin(getGuess(word, newCorrectLetters))) {
       alert("You win!");
 
       resetHangman();
@@ -128,7 +131,7 @@ function App() {
             <div>Played letters</div>
             <span>
               {" "}
-              {Array.from(playedLetters)
+              {Array.from(wrongLetters)
                 .sort()
                 .map((letter) => " " + letter + " ")}
             </span>

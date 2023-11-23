@@ -1,4 +1,4 @@
-const NO_OF_ALLOWED_MISTAKES = 7; 
+const NO_OF_ALLOWED_MISTAKES = 9; 
 
 export async function getWordFromAPI() {
   let response = await fetch("https://random-word-api.herokuapp.com/word");
@@ -7,17 +7,19 @@ export async function getWordFromAPI() {
   return word.toUpperCase();
 }
 
-export function answerLetter(letter : string, word : string, playedLetters : Set<string>, noOfMistakes : number) {
+export function answerLetter(letter : string, word : string, correctLetters : Set<string>, wrongLetters : Set<string>, noOfMistakes : number) {
   let isInWord = word.includes(letter);
 
   if(!isInWord) {
     noOfMistakes += 1;
+    wrongLetters.add(letter);
   }
 
-  playedLetters.add(letter);
+  correctLetters.add(letter);
 
   return [
-    playedLetters,
+    correctLetters,
+    wrongLetters,
     noOfMistakes,
   ] as const;
 }
@@ -31,11 +33,11 @@ export function checkLose(noOfMistakes : number) {
 }
 
 
-export function getGuess(word : string, playedLetters : Set<string>) {
+export function getGuess(word : string, correctLetters : Set<string>) {
   let guess = "";
 
   for(let letter of word) {
-    guess += playedLetters.has(letter) ? ` ${letter}` : " _";
+    guess += correctLetters.has(letter) ? ` ${letter}` : " _";
   }
 
   return guess;
